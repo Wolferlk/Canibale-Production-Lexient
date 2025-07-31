@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import axios from 'axios';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Featuredcollection from '../components/FeaturedCollection'
+import api from "../services/apiClients";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -21,7 +22,7 @@ export default function ProductDetail() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/products/${id}`);
+        const response = await api.products.getById(id);
         setProduct(response.data);
         setSelectedSize(response.data.sizes[0] || '');
         setSelectedColor(response.data.colors[0] || '');

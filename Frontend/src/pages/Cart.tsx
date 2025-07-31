@@ -4,6 +4,7 @@ import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
 import { CheckCircle } from 'lucide-react';
+import api from "../services/apiClients";
 
 export default function Cart() {
   const { state, dispatch } = useCart();
@@ -43,12 +44,18 @@ export default function Cart() {
       try {
         setLoading(true);
         const productIds = state.items.map((item) => item.productId);
-        const response = await axios.get('http://localhost:5000/api/products', {
-          params: { ids: productIds.join(',') },
-        });
+         const response = await api.products.getAll();
+
+        // Filter products by IDs (assuming backend doesn't support direct ID filtering)
+        const relevantProducts = response.data.filter((p) =>
+          productIds.includes(p._id)
+        );
 
         const updatedCartItems = state.items.map((item) => {
           const product = response.data.find((p) => p._id === item.productId);
+          const product = relevantProducts.find(
+            (p) => p._id === item.productId
+          );
           return { ...item, product };
         });
         setCartItems(updatedCartItems);
@@ -165,7 +172,7 @@ export default function Cart() {
         totalAmount: total,
       };
 
-      await axios.post('http://localhost:5000/api/orders', orderData);
+      await api.orders.add(orderData);
       setShowModal(false);
       setShowSuccessPopup(true);
       dispatch({ type: 'CLEAR_CART' });

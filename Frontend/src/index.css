@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'SCHABO_Cond';
+  src: url('/fonts/SCHABO-Condensed.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+

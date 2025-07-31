@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, ShoppingBag, X } from 'lucide-react';
+import api from "../services/apiClients";
+
 
 // Reuse the same types from your main Store component
 type Category = 'all' | 'mens' | 'womens' | 'unisex' ;
@@ -36,13 +38,9 @@ const MiniStore = ({
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // Using fetch instead of axios
-        const response = await fetch('http://localhost:5000/api/products');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setProducts(data);
+       const response = await api.products.getAll();
+        setProducts(response.data);
+
       } catch (err) {
         setError('Error fetching products');
         console.error(err);

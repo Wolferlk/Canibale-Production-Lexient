@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import api from "../services/apiClients";
+
 
 interface Product {
   _id: string;
@@ -35,7 +37,8 @@ const FeaturedCollection: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/products');
+        // Replace direct axios call with apiClient
+        const response = await api.products.getAll();
         setProducts(response.data);
       } catch (err) {
         setError('Error fetching products');

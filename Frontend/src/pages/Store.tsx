@@ -3,6 +3,8 @@ import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 import { Search, Filter, X, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import api from "../services/apiClients";
+
 
 type Category = 'all' | 'mens' | 'womens' | 'unisex' | 'caps' | 'bags' | 'shoes';
 type Subcategory = string;
@@ -47,7 +49,8 @@ export default function Store() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/products');
+        //const response = await axios.get('http://localhost:5000/api/products');
+        const response = await api.products.getAll();
         setProducts(response.data);
       } catch (err) {
         setError('Error fetching products');

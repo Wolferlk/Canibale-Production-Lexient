@@ -8,7 +8,7 @@ const contactRoutes = require("./routes/contactRoutes");
 const photoRoutes = require("./routes/photoRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoutes");
-const chatRoutes = require("./routes/chatRoutes");
+
 
 dotenv.config();
 
@@ -46,7 +46,7 @@ app.use("/api/contacts", contactRoutes);
 app.use("/api/photos", photoRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/chat", chatRoutes);
+
 
 // Start the server
 // app.listen(port, () => {

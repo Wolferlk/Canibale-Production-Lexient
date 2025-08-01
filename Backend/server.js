@@ -21,7 +21,8 @@ app.use(
       "https://cannibal-co-frontend.vercel.app", // Your production frontend URL
       "https://cannibalco.com",
       "http://localhost:3000", // Local development frontend URL
-      "http://localhost:5173", // Vite's default development URL
+      "http://localhost:5173", 
+      "https://cannibal.vercel.app/",// Vite's default development URL
       "https://canibale-production-lexient-5plu-wolferlks-projects.vercel.app"//testcanibal
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

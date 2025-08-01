@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserPlus, Mail, User, Key, Globe, AlertCircle, X, Eye, EyeOff } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from "../../services/apiClients";
 
 interface FormData {
   name: string;
@@ -145,15 +146,17 @@ const AddUserComponent: React.FC = () => {
       if (formData.profileImage) {
         payload.profileImage = formData.profileImage;
       }
+      const response = await api.users.add(payload);
 
-      const response = await fetch('http://localhost:5000/api/users/add', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
+
+      // const response = await fetch('http://localhost:5000/api/users/add', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Authorization': `Bearer ${token}`,
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(payload)
+      // });
 
       const responseData = await response.json();
 

@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import api from "../../services/apiClients";
 
 // Initial form data template with three states for status
 const initialFormData = () => ({
@@ -75,7 +76,8 @@ const ItemManage = () => {
   // Fetch items from API - keeping this unchanged
   const fetchItems = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/products');
+      //const response = await axios.get('http://localhost:5000/api/products');
+      const response = await api.products.getAll();
       setItems(response.data);
       setFilteredItems(response.data); // Initialize filtered items with all items
     } catch (error) {
@@ -97,11 +99,13 @@ const ItemManage = () => {
 
     try {
       if (editingItem) {
-        await axios.put(`http://localhost:5000/api/products/${editingItem.id}`, finalProductData);
+        await api.products.update(editingItem.id, finalProductData);
+        //await axios.put(`http://localhost:5000/api/products/${editingItem.id}`, finalProductData);
         toast.success('Item updated successfully!');
       } else {
         const newProduct = { ...finalProductData, id: Date.now().toString() };
-        await axios.post('http://localhost:5000/api/products', newProduct);
+        //await axios.post('http://localhost:5000/api/products', newProduct);
+        await api.products.add(newProduct);
         toast.success('Item added successfully!');
       }
       resetForm();
@@ -114,17 +118,18 @@ const ItemManage = () => {
 
   // Handle delete product action - keeping this unchanged
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      try {
-        await axios.delete(`http://localhost:5000/api/products/${id}`);
-        toast.success('Item deleted successfully!');
-        setRefresh(!refresh);
-      } catch (error) {
-        console.error('Error deleting item:', error);
-        toast.error('Error deleting item.');
-      }
+  if (window.confirm('Are you sure you want to delete this item?')) {
+    try {
+      await api.products.delete(id);
+      toast.success('Item deleted successfully!');
+      setRefresh(!refresh);
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      toast.error('Error deleting item.');
     }
-  };
+  }
+};
+
 
   // Reset form and state
   const resetForm = () => {

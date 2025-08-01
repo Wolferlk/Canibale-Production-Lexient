@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { PieChart, Pie, Tooltip, Legend, ResponsiveContainer } from "recharts";
-
+import api from "../../services/apiClients";
 
 const Dashboard = () => {
   const [productCount, setProductCount] = useState(0);
@@ -9,24 +9,25 @@ const Dashboard = () => {
   const [orderCount, setOrderCount] = useState(0);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [productsRes, usersRes, ordersRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/products"),
-          axios.get("http://localhost:5000/api/users/viewusers"),
-          axios.get("http://localhost:5000/api/orders")
-        ]);
+  const fetchData = async () => {
+    try {
+      const [productsRes, usersRes, ordersRes] = await Promise.all([
+        api.products.getAll(),       // ✅ centralized service
+        api.users.getAll(),          // ✅ centralized service
+        api.orders.getAll(),         // ✅ centralized service
+      ]);
 
-        setProductCount(productsRes.data.length);
-        setUserCount(usersRes.data.length);
-        setOrderCount(ordersRes.data.length);
-      } catch (error) {
-        console.error("Error fetching dashboard data", error);
-      }
-    };
+      setProductCount(productsRes.data.length);
+      setUserCount(usersRes.data.length);
+      setOrderCount(ordersRes.data.length);
+    } catch (error) {
+      console.error("Error fetching dashboard data", error);
+    }
+  };
 
-    fetchData();
-  }, []);
+  fetchData();
+}, []);
+
 
   // Pie chart data
   const pieChartData = [

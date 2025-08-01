@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 import { FaTrashAlt } from 'react-icons/fa';
+import api from "../../services/apiClients";
 
 const ManagePhotos = () => {
   const [photos, setPhotos] = useState([]);  // State to store photos
@@ -13,40 +14,45 @@ const ManagePhotos = () => {
     fetchPhotos();
   }, []);
 
-  // Fetch photos from the backend
-  const fetchPhotos = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/photos');
-      setPhotos(response.data);
-    } catch (error) {
-      console.error('Error fetching photos:', error);
-      toast.error('Failed to fetch photos');
-    }
-  };
+// Fetch photos from the backend
+const fetchPhotos = async () => {
+  try {
+    const response = await api.photos.getAll(); // ✅ Use centralized API service
+    setPhotos(response.data);
+  } catch (error) {
+    console.error('Error fetching photos:', error);
+    toast.error('Failed to fetch photos');
+  }
+};
+
 
   // Handle adding a photo
-  const handleAddPhoto = async (e) => {
-    e.preventDefault();
-    if (!photoLink) {
-      toast.error('Please provide a photo link');
-      return;
-    }
-    try {
-      await axios.post('http://localhost:5000/api/photos', { photoLink });
-      toast.success('Photo added successfully');
-      setPhotoLink('');  // Clear the input after adding
-      fetchPhotos();     // Refresh the photos list
-    } catch (error) {
-      console.error('Error adding photo:', error);
-      toast.error('Failed to add photo');
-    }
-  };
+const handleAddPhoto = async (e) => {
+  e.preventDefault();
+
+  if (!photoLink) {
+    toast.error('Please provide a photo link');
+    return;
+  }
+
+  try {
+    await api.photos.add({ photoLink }); // ✅ Use service method
+    toast.success('Photo added successfully');
+    setPhotoLink('');        // Clear input
+    fetchPhotos();           // Refresh list
+  } catch (error) {
+    console.error('Error adding photo:', error);
+    toast.error('Failed to add photo');
+  }
+};
+
 
   // Handle deleting a photo
   const handleDeletePhoto = async (id) => {
     if (window.confirm('Are you sure you want to delete this photo?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/photos/${id}`);
+        await api.photos.delete(id);
+        //await axios.delete(`http://localhost:5000/api/photos/${id}`);
         toast.success('Photo deleted successfully');
         fetchPhotos();  // Refresh the photos list after deletion
       } catch (error) {

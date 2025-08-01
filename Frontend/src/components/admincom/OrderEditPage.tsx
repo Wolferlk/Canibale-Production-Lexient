@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "../../services/apiClients";
 
 export default function OrderEditPage() {
   const { orderId } = useParams();
@@ -24,9 +25,7 @@ export default function OrderEditPage() {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/orders/${orderId}`
-        );
+        const response = await api.orders.getById(orderId); 
         const fetchedOrder = response.data;
         setOrder(fetchedOrder);
         setFormData({
@@ -95,7 +94,7 @@ export default function OrderEditPage() {
     };
 
     try {
-      await axios.put(`http://localhost:5000/api/orders/${orderId}`, sanitizedData);
+     await api.orders.update(orderId, sanitizedData);
       toast.success("Order updated successfully!");
 
       const navigateTo = window.confirm(
@@ -117,7 +116,7 @@ export default function OrderEditPage() {
       );
       if (!confirmDelete) return;
   
-      await axios.delete(`http://localhost:5000/api/orders/${orderId}`);
+     await api.orders.delete(orderId);
       toast.success("Order deleted successfully!");
       
       navigate("/admin/dashboard"); // Correct relative path

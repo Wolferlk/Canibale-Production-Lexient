@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 import { FaTrashAlt, FaReply } from 'react-icons/fa'; 
+import api from "../../services/apiClients";
 
 const ManageMessages = () => {
   const [messages, setMessages] = useState([]);
@@ -15,7 +16,8 @@ const ManageMessages = () => {
   // Fetch messages from the API
   const fetchMessages = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/contacts');
+      //const response = await axios.get('http://localhost:5000/api/contacts');
+      const response = await api.contacts.getAll(); 
       setMessages(response.data);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -23,19 +25,20 @@ const ManageMessages = () => {
     }
   };
 
-  // Handle deleting a message
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this message?')) {
-      try {
-        await axios.delete(`http://localhost:5000/api/contacts/${id}`);
-        toast.success('Message deleted successfully');
-        fetchMessages();
-      } catch (error) {
-        console.error('Error deleting message:', error);
-        toast.error('Failed to delete message');
-      }
+ // Handle deleting a message
+const handleDelete = async (id) => {
+  if (window.confirm('Are you sure you want to delete this message?')) {
+    try {
+      await api.contacts.delete(id); // ✅ use centralized service
+      toast.success('Message deleted successfully');
+      fetchMessages(); // refresh after delete
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast.error('Failed to delete message');
     }
-  };
+  }
+};
+
 
   // Handle viewing a single message with details
   const handleViewMessage = (message) => {

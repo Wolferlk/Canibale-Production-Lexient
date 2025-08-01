@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import api from "../../services/apiClients";
 import { generateOrderPDF } from '../../utils/pdfGenerator'; // adjust path as needed
 import { 
   FiEdit, 
@@ -60,7 +61,8 @@ const OrderManage = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/orders");
+      //const response = await axios.get("http://localhost:5000/api/orders");
+      const response = await api.orders.getAll();
       setOrders(response.data.reverse());
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -79,10 +81,8 @@ const OrderManage = () => {
 
     try {
       if (editingOrder && editingOrder.id) {
-        await axios.put(
-          `http://localhost:5000/api/orders/${editingOrder.id}`,
-          finalOrderData
-        );
+        await api.orders.update(editingOrder.id, finalOrderData);
+
         toast.success("Order updated successfully!");
         setRefresh(!refresh);
         setFormData(null);

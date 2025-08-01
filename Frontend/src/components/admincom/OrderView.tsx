@@ -4,6 +4,7 @@ import { FaPhoneAlt, FaMapMarkerAlt, FaClipboardList, FaCheckCircle, FaTimesCirc
 import { motion } from 'framer-motion'; 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from "../../services/apiClients";
 
 const OrderView = ({ orderId }) => {
   const [order, setOrder] = useState(null);
@@ -14,7 +15,8 @@ const OrderView = ({ orderId }) => {
 
   const fetchOrderDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/orders/${orderId}`);
+      //const response = await axios.get(`http://localhost:5000/api/orders/${orderId}`);
+      const response = await api.orders.getById(orderId);
       setOrder(response.data);
     } catch (error) {
       console.error('Error fetching order details:', error);

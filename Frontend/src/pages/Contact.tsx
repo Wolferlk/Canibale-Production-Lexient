@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ArrowRight, Phone, MapPin, Mail, Globe, MessageCircle, Send } from "lucide-react";
+import api from "../services/apiClients";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -46,38 +47,32 @@ export default function Contact() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validate()) {
-      return;
-    }
-    
-    setIsSubmitting(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      // Make a POST request to the backend API
-      const response = await fetch("http://localhost:5000/api/contacts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+  if (!validate()) {
+    return;
+  }
 
-      if (response.ok) {
-        setSubmitted(true);
-        setFormData({ name: "", email: "",phone: "", title: "", message: "" });
-      } else {
-        alert("Failed to send message. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-      alert("Error sending message. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+  setIsSubmitting(true);
+
+  try {
+    const response = await api.contacts.add(formData); // ✅ centralized API call
+
+    if (response.status === 200 || response.status === 201) {
+      setSubmitted(true);
+      setFormData({ name: "", email: "", phone: "", title: "", message: "" });
+    } else {
+      alert("Failed to send message. Please try again.");
     }
-  };
+  } catch (error) {
+    console.error("Error sending message:", error);
+    alert("Error sending message. Please try again.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   // Define the ContactInfoCard component that was missing
   const ContactInfoCard = ({ icon, title, content, delay }) => (

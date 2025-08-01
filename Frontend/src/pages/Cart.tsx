@@ -52,12 +52,14 @@ export default function Cart() {
         );
 
         const updatedCartItems = state.items.map((item) => {
-          const product = response.data.find((p) => p._id === item.productId);
+         // const product = response.data.find((p) => p._id === item.productId);
           const product = relevantProducts.find(
             (p) => p._id === item.productId
           );
           return { ...item, product };
         });
+
+
         setCartItems(updatedCartItems);
         setLoading(false);
       } catch (err) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import api from "../services/apiClients";
 
 import Dashbord from '../components/admincom/Dashboard';
 import ItemManage from '../components/admincom/ItemManage';
@@ -33,32 +34,26 @@ export default function AdminDashboard() {
   }, [navigate]);
 
   const fetchUserData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        "http://localhost:5000/api/users/viewusers",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      console.log(response.data);  // Log the response data for debugging
-      console.log(response.data);  
+  try {
+    const response = await api.users.getAll(); // token handled automatically
+    console.log(response.data);
 
-      // Assuming that you need the first user or filter by a specific criteria (e.g., email, id)
-      const loggedInUser = response.data[0];  // You can adjust this based on your logic
+    // Assuming you need the first user
+    const loggedInUser = response.data[0];
 
-      if (loggedInUser) {
-        setUserData(loggedInUser);
-      } else {
-        setError('User not found');
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      setError('Error fetching user details');
-    } finally {
-      setLoading(false);
+    if (loggedInUser) {
+      setUserData(loggedInUser);
+    } else {
+      setError('User not found');
     }
-  };
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    setError('Error fetching user details');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const fetchProducts = async () => {
     try {

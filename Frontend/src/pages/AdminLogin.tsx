@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, ArrowRight, X } from 'lucide-react';
 import axios from 'axios';
+import api from "../services/apiClients";
+
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -30,30 +32,31 @@ export default function AdminLogin() {
   }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-    try {
-      const response = await axios.post('http://localhost:5000/api/users/login', {
-        username: email,
-        password,
-      });
+  try {
+    const response = await api.users.login({
+      username: email,
+      password,
+    });
 
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('isAdmin', 'true');
-        navigate('/admin/dashboard');
-      } else {
-        setError('Invalid credentials');
-      }
-    } catch (error) {
-      console.error(error);
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('isAdmin', 'true');
+      navigate('/admin/dashboard');
+    } else {
+      setError('Invalid credentials');
     }
-  };
+  } catch (error) {
+    console.error(error);
+    setError('Something went wrong. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleGoogleLogin = () => {
     // Implement Google Authentication

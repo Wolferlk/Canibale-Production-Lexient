@@ -10,6 +10,7 @@ import MiniStore from '../components/MiniStore'
 import Footer from '../components/Footer';
 import Heronew from '../components/Hero';
 import Vid from '../data/vid2.mp4'
+import api from "../services/apiClients";
 
 
 // Animation helpers
@@ -464,22 +465,23 @@ export default function Home() {
   }, []);
 
   // Fetch featured products
-  useEffect(() => {
-    const fetchFeaturedProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get('http://localhost:5000/api/products/new');
-        setFeaturedProducts(response.data);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching featured products:', err);
-        setError('Failed to load featured products');
-        setLoading(false);
-      }
-    };
+ useEffect(() => {
+  const fetchFeaturedProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await api.products.getLatest(); // ✅ centralized API call
+      setFeaturedProducts(response.data);
+    } catch (err) {
+      console.error('Error fetching featured products:', err);
+      setError('Failed to load featured products');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchFeaturedProducts();
-  }, []);
+  fetchFeaturedProducts();
+}, []);
+
 
   
 

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
+import api from "../services/apiClients";
 
 export default function Checkout() {
   const { state, dispatch } = useCart();
@@ -18,29 +19,30 @@ export default function Checkout() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handlePlaceOrder = async () => {
-    try {
-      const cartItems = state.items.map((item) => ({
-        productName: item.productName,
-        quantity: item.quantity,
-        price: item.price,
-      }));
+ const handlePlaceOrder = async () => {
+  try {
+    const cartItems = state.items.map((item) => ({
+      productName: item.productName,
+      quantity: item.quantity,
+      price: item.price,
+    }));
 
-      const orderData = {
-        ...formData,
-        cartItems,
-        totalAmount: total,
-      };
+    const orderData = {
+      ...formData,
+      cartItems,
+      totalAmount: total,
+    };
 
-      await axios.post('http://localhost:5000/api/orders', orderData);
+    await api.orders.add(orderData); // ✅ uses centralized API
 
-      dispatch({ type: 'CLEAR_CART' });
-      alert('Order placed successfully!');
-    } catch (err) {
-      console.error('Error placing order:', err);
-      setError('Failed to place the order.');
-    }
-  };
+    dispatch({ type: 'CLEAR_CART' });
+    alert('Order placed successfully!');
+  } catch (err) {
+    console.error('Error placing order:', err);
+    setError('Failed to place the order.');
+  }
+};
+
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow">

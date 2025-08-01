@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { CheckCircle, CreditCard, Phone, MapPin, User, Mail,ArrowLeft } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import axios from 'axios';
+import api from "../../services/apiClients";
 
 export default function Checkoutkoko() {
   const { state, dispatch } = useCart();
@@ -170,7 +171,10 @@ export default function Checkoutkoko() {
       };
 
       // Call your backend to create Koko payment order
-      const response = await axios.post('http://localhost:5000/api/koko/create-order', kokoOrderData);
+      //const response = await axios.post('http://localhost:5000/api/koko/create-order', kokoOrderData);
+      const response = await api.koko.createOrder(kokoOrderData);
+
+      
       
       if (response.data.success && response.data.paymentUrl) {
         // Redirect to Koko payment page
@@ -223,7 +227,11 @@ export default function Checkoutkoko() {
       };
 
 
-      await axios.post('http://localhost:5000/api/orders', orderData);
+      //await axios.post('http://localhost:5000/api/orders', orderData);
+      await api.orders.add(orderData);
+
+      
+
       setShowSuccessPopup(true);
       dispatch({ type: 'CLEAR_CART' });
       

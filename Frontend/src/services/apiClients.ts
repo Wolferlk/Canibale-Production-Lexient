@@ -3,6 +3,8 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 // Base API configuration
 const API_BASE_URL = "https://canibale-production-lexient.vercel.app";
 
+
+
 // Create an axios instance with default config
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -24,6 +26,8 @@ apiClient.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+
 
 // Response interceptor for handling errors globally
 apiClient.interceptors.response.use(
@@ -57,6 +61,12 @@ const api = {
 
     delete: (id: string): Promise<AxiosResponse> =>
       apiClient.delete(`/api/products/${id}`),
+  },
+
+  koko: {
+    createOrder: (orderData: any): Promise<AxiosResponse> =>
+      apiClient.post("/api/koko/create-order", orderData),
+    
   },
 
   orders: {
@@ -115,6 +125,8 @@ const api = {
       apiClient.post("/api/users/login", credentials),
 
     getAll: (): Promise<AxiosResponse> => apiClient.get("/api/users/viewusers"),
+    //getAll: (): Promise<AxiosResponse> => apiClient.get("/api/users/viewusers"),
+
 
     getProfile: (): Promise<AxiosResponse> =>
       apiClient.get("/api/users/viewprofile"),
@@ -131,6 +143,8 @@ const api = {
     delete: (userId: string): Promise<AxiosResponse> =>
       apiClient.delete(`/api/users/delete/${userId}`),
   },
+
+  
 
   chat: {
     send: (message: string, sessionId?: string): Promise<AxiosResponse> =>

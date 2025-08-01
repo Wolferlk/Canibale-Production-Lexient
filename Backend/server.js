@@ -22,7 +22,7 @@ app.use(
       "https://cannibalco.com",
       "http://localhost:3000", // Local development frontend URL
       "http://localhost:5173", 
-      "https://cannibal.vercel.app/",// Vite's default development URL
+      "https://cannibal.vercel.app",// Vite's default development URL
       "https://canibale-production-lexient-5plu-wolferlks-projects.vercel.app"//testcanibal
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

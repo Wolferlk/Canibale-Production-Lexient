@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from "../services/apiClients";
 import { 
   Sparkles, 
   Upload, 
@@ -62,12 +63,14 @@ const AIItemFinder = () => {
   const [apiProducts, setApiProducts] = useState<Product[]>([]);
   const [isLoadingApi, setIsLoadingApi] = useState(false);
   
+  
   // Fetch products from API
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoadingApi(true);
       try {
-        const response = await axios.get('http://localhost:5000/api/products');
+        const response = await api.products.getAll();
+        //const response = await axios.get('http://localhost:5000/api/products');
         setApiProducts(response.data);
       } catch (err) {
         console.error('Failed to fetch products:', err);

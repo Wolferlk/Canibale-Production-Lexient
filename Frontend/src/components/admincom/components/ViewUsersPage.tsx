@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from "../../../services/apiClients";
 
 const ViewUsersPage = () => {
   const navigate = useNavigate();
@@ -23,29 +24,23 @@ const ViewUsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch all users from the backend
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/users/viewusers', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch users');
-        }
-        
-        const data = await response.json();
-        setUsers(data);
-      } catch (error) {
-        setError('Error fetching users');
-        toast.error('Error fetching users');
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await api.users.getAll();  // centralized API service
+      setUsers(response.data);
+    } catch (error) {
+      setError('Error fetching users');
+      toast.error('Error fetching users');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchUsers();
-  }, []);
+  fetchUsers();
+}, []);
+
 
   // Handle Edit button click
   const handleEdit = (user: User) => {
@@ -59,80 +54,58 @@ const ViewUsersPage = () => {
   };
 
   // Handle Update user
-  const handleUpdate = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/users/edit/${editUser?._id}`,
-        {
-          method: 'PUT',
-          headers: { 
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}` 
-          },
-          body: JSON.stringify(editUser)
-        }
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to update user');
-      }
-      
-      const updatedUser = await response.json();
+const handleUpdate = async () => {
+  try {
+    if (!editUser?._id) throw new Error('No user selected for update');
 
-      // Update UI
-      if (editUser) {
-        setUsers(users.map((user) => (user._id === editUser._id ? updatedUser : user)));
-      }
-      toast.success('User updated successfully!');
-      setShowModal(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message || 'Failed to update user');
-      } else {
-        toast.error('Failed to update user');
-      }
+    const response = await api.users.update(editUser._id, editUser);
+    const updatedUser = response.data;
+
+    // Update UI
+    setUsers(users.map((user) => (user._id === editUser._id ? updatedUser : user)));
+    toast.success('User updated successfully!');
+    setShowModal(false);
+  } catch (error) {
+    if (error instanceof Error) {
+      toast.error(error.message || 'Failed to update user');
+    } else {
+      toast.error('Failed to update user');
     }
-  };
+  }
+};
+
 
   // Handle Delete user with confirmation and toast notification
   interface DeleteResponse {
     message: string;
   }
 
-  const handleDelete = async (userId: string): Promise<void> => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this user?');
+const handleDelete = async (userId: string): Promise<void> => {
+  const confirmDelete = window.confirm('Are you sure you want to delete this user?');
 
-    if (confirmDelete) {
-      try {
-        const response = await fetch(`http://localhost:5000/api/users/delete/${userId}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to delete user');
-        }
+  if (!confirmDelete) return;
 
-        const data: DeleteResponse = await response.json();
+  try {
+    await api.users.delete(userId); // ✅ centralized delete API call
 
-        setUsers(users.filter((user) => user._id !== userId));
-        toast.success('User deleted successfully!', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-      } catch (error) {
-        if (error instanceof Error) {
-          toast.error(error.message || 'Error deleting user');
-        } else {
-          toast.error('Error deleting user');
-        }
-      }
+    setUsers(users.filter((user) => user._id !== userId));
+    toast.success('User deleted successfully!', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      toast.error(error.message || 'Error deleting user');
+    } else {
+      toast.error('Error deleting user');
     }
-  };
+  }
+};
+
 
   // Generate and download PDF report
 // Add this inside your component, before the handleDownloadReport function

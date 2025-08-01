@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from "../../../services/apiClients";
 
 export default function ProfileUpdatePage() {
   const navigate = useNavigate();
@@ -30,9 +31,8 @@ export default function ProfileUpdatePage() {
           return;
         }
 
-        const response = await axios.get('http://localhost:5000/api/users/viewprofile', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await api.users.getProfile();
+
 
         if (response.data) {
           setUser(response.data);
@@ -59,23 +59,22 @@ export default function ProfileUpdatePage() {
   }
 
   const handleProfileUpdate = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.put<{ data: User }>(`http://localhost:5000/api/users/edit/${user._id}`, user, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  e.preventDefault();
 
-      if (response.data) {
-        setMessage('Profile updated successfully!');
-      } else {
-        setMessage('Error updating profile.');
-      }
-    } catch (error) {
-      setMessage('Error updating profile');
-      console.error('Error updating profile:', error);
+  try {
+    const response = await api.users.update(user._id, user);
+
+    if (response.data) {
+      setMessage('Profile updated successfully!');
+    } else {
+      setMessage('Error updating profile.');
     }
-  };
+  } catch (error) {
+    setMessage('Error updating profile');
+    console.error('Error updating profile:', error);
+  }
+};
+
 
   if (loading) {
     return <div>Loading...</div>;
